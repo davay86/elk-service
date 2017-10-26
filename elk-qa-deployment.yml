@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name: elk
+spec:
+    replicas: 1
+    template:
+        metadata:
+            labels:
+              app: elk
+              tier: logging
+        spec:
+            containers:
+            - name: elk
+              image: advantageous/elk:latest
+              command: ["/usr/local/bin/start.sh"]
+              ports:
+              - containerPort: 9200
+              - containerPort: 5044
+              - containerPort: 5000
+              - containerPort: 5001
+                protocol: UDP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: elk-gateway
+    labels:
+        app: elk
+        tier: logging
+spec:
+    type: LoadBalancer
+    ports:
+    - name: web
+      protocol: TCP
+      port: 5601
+      targetPort: 5601
+    - name: json
+      protocol: UDP
+      port: 5001
+      targetPort: 5001
+    selector:
+        app: elk
+        tier: logging
