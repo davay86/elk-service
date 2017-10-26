@@ -12,14 +12,23 @@ spec:
         spec:
             containers:
             - name: elk
-              image: advantageous/elk:latest
-              command: ["/usr/local/bin/start.sh"]
+              image: scoussy/elk:latest
+              volumeMounts:
+              - mountPath: /root/elasticsearch/
+                name: es-volume-1
+              - mountPath: /var/lib/elasticsearch/elasticsearch
+                name: es-volume-2
               ports:
+              - containerPort: 5601
               - containerPort: 9200
               - containerPort: 5044
               - containerPort: 5000
-              - containerPort: 5001
-                protocol: UDP
+              - containerPort: 4560
+            volumes:
+            - name: es-volume-1
+              emptyDir: {}
+            - name: es-volume-2
+              emptyDir: {}
 
 ---
 
@@ -37,10 +46,10 @@ spec:
       protocol: TCP
       port: 5601
       targetPort: 5601
-    - name: json
-      protocol: UDP
-      port: 5001
-      targetPort: 5001
+    - name: logstash
+      protocol: TCP
+      port: 4560
+      targetPort: 4560
     selector:
         app: elk
         tier: logging
