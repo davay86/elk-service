@@ -13,6 +13,18 @@ spec:
             containers:
             - name: elk
               image: scoussy/elk:latest
+              readinessProbe:
+                tcpSocket:
+                  port: 4560
+                initialDelaySeconds: 120
+                timeoutSeconds: 60
+                periodSeconds: 15
+              livenessProbe:
+                tcpSocket:
+                  port: 4560
+                initialDelaySeconds: 120
+                timeoutSeconds: 60
+                periodSeconds: 15
               volumeMounts:
               - mountPath: /root/elasticsearch/
                 name: es-volume-1
